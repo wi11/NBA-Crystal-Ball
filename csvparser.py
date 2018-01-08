@@ -11,7 +11,7 @@ class Team(object):
         self.visitor_games = 0.0
         self.home_games = 0.0
 
-    def update_features(win, home, point_dif):
+    def update_features(self, win, home, point_dif):
         """ Updates all of this teams feature stats based on the last game they
         played """
         #new game played
@@ -28,19 +28,19 @@ class Team(object):
         #games - 1 and adding current game PD and dividing by total number of games
         self.point_differential = (point_dif + self.point_differential * (self.games - 1))/self.games
 
-    def get_WL():
+    def get_WL(self):
         """ Gets this teams win-loss percentage """
         return self.wins/self.games
 
-    def get_PD():
+    def get_PD(self):
         """ Gets this teams point differential """
         return self.point_differential
 
-    def get_VWL():
+    def get_VWL(self):
         """ Gets this teams win-loss percentage as a visitor """
         return self.visitor_wins / self.visitor_games
 
-    def get_HWL():
+    def get_HWL(self):
         """ Gets this teams home game win-loss percentage """
         return self.home_wins / self.home_games
 
@@ -55,10 +55,10 @@ def parse():
     box_scores = pd.read_csv("2016_Box_Scores.csv")
 
     for row in box_scores.itertuples():
-        visitor = row[0]
-        visitor_score = float(row[1])
-        home = row[2]
-        home_score = float(row[3])
+        visitor = row[1]
+        visitor_score = float(row[2])
+        home = row[3]
+        home_score = float(row[4])
         visitor_win = visitor_score > home_score
         home_win = not visitor_win
 
@@ -68,12 +68,12 @@ def parse():
         teams[visitor].update_features(visitor_win, False, visitor_score - home_score)
         if home not in teams:
             teams[home] = Team(home)
-        teams[home].update_features(home_win, True, home_score - visitor_socre)
+        teams[home].update_features(home_win, True, home_score - visitor_score)
 
         #build feature vector
         v = teams[visitor]
         h = teams[home]
-        vector = [v.get_WL(), h.get_WL(), v.get_PD(), h.get_PD(), v.getVWL(), h.getHWL()]
+        vector = [v.get_WL(), h.get_WL(), v.get_PD(), h.get_PD(), v.get_VWL(), h.get_HWL()]
 
         features.append(vector)
         outcomes.append(home_win)
