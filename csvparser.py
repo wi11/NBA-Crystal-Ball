@@ -44,15 +44,12 @@ class Team(object):
         """ Gets this teams home game win-loss percentage """
         return self.home_wins / self.home_games
 
-#will hold each team object with team name as key
-teams = {}
-
-def parse():
+def parse_data(teams, filename):
     """ Reads CSV file and populates the features and outcomes lists and builds
     the teams dictionary for future prediction based on team stats """
     features = [] #contains a 6 element feature vector for each game
     outcomes = [] #contains a 1 or 0 for each game, 1 for home-team win, else 0
-    box_scores = pd.read_csv("2016_Box_Scores.csv")
+    box_scores = pd.read_csv(filename)
 
     for row in box_scores.itertuples():
         visitor = row[1]
@@ -76,8 +73,5 @@ def parse():
         vector = [v.get_WL(), h.get_WL(), v.get_PD(), h.get_PD(), v.get_VWL(), h.get_HWL()]
 
         features.append(vector)
-        outcomes.append(home_win)
+        outcomes.append([0 if home_win else 1,1 if home_win else 0])
     return (features, outcomes)
-
-def get_teams():
-    return teams
